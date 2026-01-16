@@ -1,0 +1,41 @@
+目录结构
+├── config                   # umi 配置，包含路由，构建等配置
+├── mock                     # 本地模拟数据
+├── public
+│   └── favicon.png          # Favicon
+├── src
+│   ├── assets               # 本地静态资源
+│   ├── components           # 业务通用组件
+│   ├── e2e                  # 集成测试用例
+│   ├── layouts              # 通用布局
+│   ├── models               # 全局 dva model
+│   ├── pages                # 业务页面入口和常用模板
+│   ├── services             # 后台接口服务
+│   ├── utils                # 工具库
+│   ├── locales              # 国际化资源
+│   ├── global.less          # 全局样式
+│   └── global.ts            # 全局 JS
+├── tests                    # 测试工具
+├── README.md
+└── package.json
+
+结构解释说明:
+1.config 配置文件
+/proxy.ts  端口网址配制
+
+2.mock 初始化模拟数据
+
+3.public 公共资源
+/favicon.png 这个就是当前网站的图标 比如wikipedia的图标就是一个W 
+4.src
+/locale 多语言国际化设置
+/service 调用API接口
+
+5.package.json
+npm run start 其实用的就是package.json里面script脚本中的start命令
+
+配制自修改:
+1.package.json中的start改为cross-env REACT_APP_ENV=dev UMI_ENV=dev max dev,原来为cross-env UMI_ENV=dev max dev
+这样子是为了在npm run start的时候在右上角也显示当前环境
+
+2config.ts中在defineConfig里面加入favicons: ['/favicon.ico'], 这样子是为了在浏览器标签页那里显示当前网站的图标

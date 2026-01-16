@@ -1,0 +1,45 @@
+1.修改登录界面
+我现在要做的是改login里面的index.tsx
+1.我要用usercenter.png充满右边的屏幕
+2.这个标题就叫User Cloud Center 
+3. logo就用<DatabaseOutlined /> antd里的
+4.简介：当前登录用户的个人信息、权限状态、设置和相关操作的集中管理页面
+5.删掉login page中支付宝,淘宝,等的icon以及其他登录方式
+6.删掉最下面的github以及多余语言信息
+
+2.修改用户名以及密码
+1.在mock里面修改 如果改了之后没有改变, app中书令开发环境使用 mock,不设置 baseURL
+2.在index里面更改提示词 如果改了之后没有改变
+3.确保国际化所有都进行了更改
+
+3.添加forgot passwor的界面
+
+添加界面的步骤
+1.在page中创建新的页面 编写逻辑
+2.在route中添加新的路由
+
+4.图表
+1.首先下载 npm install @ant-design/charts --save
+2.在config.ts中的scripts中配置
+headScripts: [
+// 解决首次加载时白屏的问题
+{ src: join(PUBLIC_PATH, 'scripts/loading.js'), async: true },
+// Ant Design Charts 相关脚本
+'https://unpkg.com/react@17/umd/react.production.min.js',
+'https://unpkg.com/react-dom@17/umd/react-dom.production.min.js',
+'https://unpkg.com/@ant-design/charts@1.0.5/dist/charts.min.js',
+// 使用 组织架构图、流程图、资金流向图、缩进树图才需要使用
+'https://unpkg.com/@ant-design/charts@1.0.5/dist/charts_g6.min.js',
+],
+/**
+* @name 外部依赖配置
+* @description 配置外部依赖，避免打包到 bundle 中
+*/
+externals: {
+react: 'React',
+'react-dom': 'ReactDOM',
+'@ant-design/charts': 'charts',
+},
+
+5.删除水印 app.tsx里面删除
+
