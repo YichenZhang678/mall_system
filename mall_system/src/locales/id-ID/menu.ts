@@ -24,6 +24,8 @@ export default {
   'menu.form.advanced-form': 'Form Lanjutan',
   'menu.list': 'Daftar',
   'menu.list.table-list': 'Tabel Pencarian',
+  'menu.product': 'Manajemen Produk',
+  'menu.product.management': 'Manajemen Produk',
   'menu.list.basic-list': 'Daftar Dasar',
   'menu.list.card-list': 'Daftar Kartu',
   'menu.list.search-list': 'Daftar Pencarian',

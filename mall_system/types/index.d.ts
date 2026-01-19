@@ -1,34 +1,34 @@
 declare namespace API {
   /** 当前用户类型 */
   export type CurrentUser = {
-    name: string;
-    avatar: string;
-    userid: string;
-    email: string;
-    signature: string;
-    title: string;
-    group: string;
-    tags: {
-      key: string;
-      label: string;
-    }[];
-    notifyCount: number;
-    unreadCount: number;
-    country: string;
-    geographic: {
-      province: {
-        label: string;
+      name: string;
+      avatar: string;
+      userid: string;
+      email: string;
+      signature: string;
+      title: string;
+      group: string;
+      tags: {
         key: string;
-      };
-      city: {
         label: string;
-        key: string;
+      }[];
+      notifyCount: number;
+      unreadCount: number;
+      country: string;
+      geographic: {
+        province: {
+          label: string;
+          key: string;
+        };
+        city: {
+          label: string;
+          key: string;
+        };
       };
-    };
-    address: string;
-    phone: string;
+      address: string;
+      phone: string;
     access?: string;
-  };
+    };
 
   /** GET /api/currentUser */
   export type GET_API_CURRENT_USER_QUERY = {

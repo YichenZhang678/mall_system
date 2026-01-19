@@ -23,6 +23,8 @@ export default {
   'menu.form.advanced-form': '高度なフォーム',
   'menu.list': 'リスト',
   'menu.list.table-list': '検索テーブル',
+  'menu.product': '商品管理',
+  'menu.product.management': '商品管理',
   'menu.list.basic-list': '基本リスト',
   'menu.list.card-list': 'カードリスト',
   'menu.list.search-list': '検索リスト',

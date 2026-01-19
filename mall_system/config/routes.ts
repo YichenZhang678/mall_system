@@ -34,9 +34,9 @@ export default [
     component: './Dashboard',
   },
   {
-    name: 'list.table-list',
-    icon: 'table',
-    path: '/list',
+    name: 'product.management',
+    icon: 'shopping',
+    path: '/product',
     component: './table-list',
   },
   {

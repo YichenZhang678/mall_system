@@ -1,28 +1,34 @@
 import {
-  ProFormDateTimePicker,
-  ProFormRadio,
   ProFormSelect,
   ProFormText,
   ProFormTextArea,
+  ProFormDigit,
+  ProFormSwitch,
+  ProFormItem,
   StepsForm,
 } from '@ant-design/pro-components';
-import { FormattedMessage, useIntl, useRequest } from '@umijs/max';
-import { Modal, message } from 'antd';
+import { useIntl, useRequest } from '@umijs/max';
+import { Modal, message, Upload } from 'antd';
 import React, { cloneElement, useCallback, useState } from 'react';
-import { updateRule } from '@/services/ant-design-pro/api';
+import { updateProduct } from '@/services/ant-design-pro/api';
 
 export type FormValueType = {
-  target?: string;
-  template?: string;
-  type?: string;
-  time?: string;
-  frequency?: string;
-} & Partial<API.RuleListItem>;
+  category?: string;
+  price?: number;
+  stock?: number;
+  status?: number;
+  description?: string;
+  specs?: {
+    size?: string[];
+    color?: string[];
+    [key: string]: any;
+  };
+} & Partial<API.ProductListItem>;
 
 export type UpdateFormProps = {
   trigger?: React.ReactElement<any>;
   onOk?: () => void;
-  values: Partial<API.RuleListItem>;
+  values: Partial<API.ProductListItem>;
 };
 
 const UpdateForm: React.FC<UpdateFormProps> = (props) => {
@@ -34,14 +40,14 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
 
   const [messageApi, contextHolder] = message.useMessage();
 
-  const { run } = useRequest(updateRule, {
+  const { run } = useRequest(updateProduct, {
     manual: true,
     onSuccess: () => {
-      messageApi.success('Configuration is successful');
+      messageApi.success('商品更新成功');
       onOk?.();
     },
     onError: () => {
-      messageApi.error('Configuration failed, please try again!');
+      messageApi.error('商品更新失败，请重试');
     },
   });
 
@@ -55,8 +61,15 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
 
   const onFinish = useCallback(
     async (values?: any) => {
-      await run({ data: values });
-
+      await run({
+        data: {
+          ...values,
+          method: 'update',
+          key: values.key || values.id,
+          id: values.id,
+          status: values.status ? 1 : 0,
+        }
+      });
       onCancel();
     },
     [onCancel, run],
@@ -77,13 +90,10 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
         stepsFormRender={(dom, submitter) => {
           return (
             <Modal
-              width={640}
+              width={800}
               bodyStyle={{ padding: '32px 40px 48px' }}
               destroyOnClose
-              title={intl.formatMessage({
-                id: 'pages.searchTable.updateForm.ruleConfig',
-                defaultMessage: '规则配置',
-              })}
+              title="编辑商品"
               open={open}
               footer={submitter}
               onCancel={onCancel}
@@ -95,149 +105,137 @@ const UpdateForm: React.FC<UpdateFormProps> = (props) => {
         onFinish={onFinish}
       >
         <StepsForm.StepForm
-          initialValues={values}
-          title={intl.formatMessage({
-            id: 'pages.searchTable.updateForm.basicConfig',
-            defaultMessage: '基本信息',
-          })}
+          initialValues={{
+            ...values,
+            status: values.status === 1,
+          }}
+          title="基本信息"
         >
           <ProFormText
             name="name"
-            label={intl.formatMessage({
-              id: 'pages.searchTable.updateForm.ruleName.nameLabel',
-              defaultMessage: '规则名称',
-            })}
+            label="商品名称"
             width="md"
             rules={[
               {
                 required: true,
-                message: (
-                  <FormattedMessage
-                    id="pages.searchTable.updateForm.ruleName.nameRules"
-                    defaultMessage="请输入规则名称！"
-                  />
-                ),
+                message: '请输入商品名称',
+              },
+            ]}
+          />
+          <ProFormSelect
+            name="category"
+            width="md"
+            label="商品分类"
+            placeholder="请选择商品分类"
+            options={[
+              { label: '服装', value: '服装' },
+              { label: '配饰', value: '配饰' },
+              { label: '美妆', value: '美妆' },
+              { label: '家居', value: '家居' },
+              { label: '数码', value: '数码' },
+              { label: '食品', value: '食品' },
+              { label: '运动', value: '运动' },
+              { label: '图书', value: '图书' },
+            ]}
+            rules={[
+              {
+                required: true,
+                message: '请选择商品分类',
+              },
+            ]}
+          />
+          <ProFormDigit
+            name="price"
+            label="售价"
+            width="md"
+            placeholder="请输入商品售价"
+            min={0}
+            fieldProps={{ precision: 2 }}
+            rules={[
+              {
+                required: true,
+                message: '请输入商品价格',
+              },
+            ]}
+          />
+          <ProFormDigit
+            name="stock"
+            label="库存"
+            width="md"
+            placeholder="请输入库存数量"
+            min={0}
+            rules={[
+              {
+                required: true,
+                message: '请输入库存数量',
               },
             ]}
           />
           <ProFormTextArea
-            name="desc"
+            name="description"
             width="md"
-            label={intl.formatMessage({
-              id: 'pages.searchTable.updateForm.ruleDesc.descLabel',
-              defaultMessage: '规则描述',
-            })}
-            placeholder={intl.formatMessage({
-              id: 'pages.searchTable.updateForm.ruleDesc.descPlaceholder',
-              defaultMessage: '请输入至少五个字符',
-            })}
-            rules={[
-              {
-                required: true,
-                message: (
-                  <FormattedMessage
-                    id="pages.searchTable.updateForm.ruleDesc.descRules"
-                    defaultMessage="请输入至少五个字符的规则描述！"
-                  />
-                ),
-                min: 5,
-              },
-            ]}
+            label="商品描述"
+            placeholder="请输入商品描述"
+          />
+          <ProFormSwitch
+            name="status"
+            label="上架状态"
+            checkedChildren="上架"
+            unCheckedChildren="下架"
           />
         </StepsForm.StepForm>
         <StepsForm.StepForm
           initialValues={{
-            target: '0',
-            template: '0',
+            specs: values.specs || { size: [], color: [] },
           }}
-          title={intl.formatMessage({
-            id: 'pages.searchTable.updateForm.ruleProps.title',
-            defaultMessage: '配置规则属性',
-          })}
+          title="规格设置"
         >
           <ProFormSelect
-            name="target"
+            name={['specs', 'size']}
+            label="尺码"
             width="md"
-            label={intl.formatMessage({
-              id: 'pages.searchTable.updateForm.object',
-              defaultMessage: '监控对象',
-            })}
-            valueEnum={{
-              0: '表一',
-              1: '表二',
-            }}
-          />
-          <ProFormSelect
-            name="template"
-            width="md"
-            label={intl.formatMessage({
-              id: 'pages.searchTable.updateForm.ruleProps.templateLabel',
-              defaultMessage: '规则模板',
-            })}
-            valueEnum={{
-              0: '规则模板一',
-              1: '规则模板二',
-            }}
-          />
-          <ProFormRadio.Group
-            name="type"
-            label={intl.formatMessage({
-              id: 'pages.searchTable.updateForm.ruleProps.typeLabel',
-              defaultMessage: '规则类型',
-            })}
+            mode="multiple"
+            placeholder="请选择尺码"
             options={[
-              {
-                value: '0',
-                label: '强',
-              },
-              {
-                value: '1',
-                label: '弱',
-              },
-            ]}
-          />
-        </StepsForm.StepForm>
-        <StepsForm.StepForm
-          initialValues={{
-            type: '1',
-            frequency: 'month',
-          }}
-          title={intl.formatMessage({
-            id: 'pages.searchTable.updateForm.schedulingPeriod.title',
-            defaultMessage: '设定调度周期',
-          })}
-        >
-          <ProFormDateTimePicker
-            name="time"
-            width="md"
-            label={intl.formatMessage({
-              id: 'pages.searchTable.updateForm.schedulingPeriod.timeLabel',
-              defaultMessage: '开始时间',
-            })}
-            rules={[
-              {
-                required: true,
-                message: (
-                  <FormattedMessage
-                    id="pages.searchTable.updateForm.schedulingPeriod.timeRules"
-                    defaultMessage="请选择开始时间！"
-                  />
-                ),
-              },
+              { label: 'S', value: 'S' },
+              { label: 'M', value: 'M' },
+              { label: 'L', value: 'L' },
+              { label: 'XL', value: 'XL' },
+              { label: 'XXL', value: 'XXL' },
             ]}
           />
           <ProFormSelect
-            name="frequency"
-            label={intl.formatMessage({
-              id: 'pages.searchTable.updateForm.object',
-              defaultMessage: '监控对象',
-            })}
+            name={['specs', 'color']}
+            label="颜色"
             width="md"
-            valueEnum={{
-              month: '月',
-              week: '周',
-            }}
+            mode="multiple"
+            placeholder="请选择颜色"
+            options={[
+              { label: '红色', value: '红色' },
+              { label: '蓝色', value: '蓝色' },
+              { label: '绿色', value: '绿色' },
+              { label: '黑色', value: '黑色' },
+              { label: '白色', value: '白色' },
+              { label: '黄色', value: '黄色' },
+              { label: '粉色', value: '粉色' },
+            ]}
           />
+          <ProFormItem
+            name="images"
+            label="商品图片"
+            extra="支持多图上传，最多5张"
+          >
+            <Upload
+              action="/api/upload"
+              listType="picture-card"
+              maxCount={5}
+              multiple
+            >
+              <div>
+                <div style={{ marginTop: 8 }}>上传</div>
+              </div>
+            </Upload>
+          </ProFormItem>
         </StepsForm.StepForm>
       </StepsForm>
     </>

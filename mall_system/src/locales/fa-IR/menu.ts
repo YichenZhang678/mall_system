@@ -23,6 +23,8 @@ export default {
   'menu.form.advanced-form': 'فرم پیشرفته',
   'menu.list': 'لیست',
   'menu.list.table-list': 'جدول جستجو',
+  'menu.product': 'مدیریت محصول',
+  'menu.product.management': 'مدیریت محصول',
   'menu.list.basic-list': 'لیست اصلی',
   'menu.list.card-list': 'لیست کارت',
   'menu.list.search-list': 'لیست جستجو',

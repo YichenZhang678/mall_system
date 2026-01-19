@@ -95,4 +95,36 @@ declare namespace API {
     pageSize?: number;
     current?: number;
   };
+
+  /** 商品列表项 */
+  export type ProductListItem = {
+    key?: number;
+    id?: number;
+    name?: string;
+    category?: string;
+    categoryId?: number;
+    price?: number;
+    stock?: number;
+    sales?: number;
+    status?: number; // 0: 下架, 1: 上架
+    images?: string[];
+    description?: string;
+    specs?: {
+      size?: string[];
+      color?: string[];
+      [key: string]: any;
+    };
+    createdAt?: string;
+    updatedAt?: string;
+    owner?: string;
+  };
+
+  /** 商品列表 */
+  export type ProductList = {
+    data?: ProductListItem[];
+    total?: number;
+    success?: boolean;
+    pageSize?: number;
+    current?: number;
+  };
 }

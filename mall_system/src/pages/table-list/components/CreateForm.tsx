@@ -4,11 +4,14 @@ import {
   ModalForm,
   ProFormText,
   ProFormTextArea,
+  ProFormDigit,
+  ProFormSelect,
+  ProFormSwitch,
 } from '@ant-design/pro-components';
-import { FormattedMessage, useIntl, useRequest } from '@umijs/max';
+import { useIntl, useRequest } from '@umijs/max';
 import { Button, message } from 'antd';
 import type { FC } from 'react';
-import { addRule } from '@/services/ant-design-pro/api';
+import { addProduct } from '@/services/ant-design-pro/api';
 
 interface CreateFormProps {
   reload?: ActionType['reload'];
@@ -18,20 +21,16 @@ const CreateForm: FC<CreateFormProps> = (props) => {
   const { reload } = props;
 
   const [messageApi, contextHolder] = message.useMessage();
-  /**
-   * @en-US International configuration
-   * @zh-CN 国际化配置
-   * */
   const intl = useIntl();
 
-  const { run, loading } = useRequest(addRule, {
+  const { run, loading } = useRequest(addProduct, {
     manual: true,
     onSuccess: () => {
-      messageApi.success('Added successfully');
+      messageApi.success('商品创建成功');
       reload?.();
     },
     onError: () => {
-      messageApi.error('Adding failed, please try again!');
+      messageApi.error('商品创建失败，请重试');
     },
   });
 
@@ -39,20 +38,22 @@ const CreateForm: FC<CreateFormProps> = (props) => {
     <>
       {contextHolder}
       <ModalForm
-        title={intl.formatMessage({
-          id: 'pages.searchTable.createForm.newRule',
-          defaultMessage: 'New rule',
-        })}
+        title="新建商品"
         trigger={
           <Button type="primary" icon={<PlusOutlined />}>
-            <FormattedMessage id="pages.searchTable.new" defaultMessage="New" />
+            新建商品
           </Button>
         }
-        width="400px"
+        width="600px"
         modalProps={{ okButtonProps: { loading } }}
         onFinish={async (value) => {
-          await run({ data: value as API.RuleListItem });
-
+          await run({
+            data: {
+              ...value,
+              method: 'post',
+              status: value.status ? 1 : 0,
+            } as API.ProductListItem
+          });
           return true;
         }}
       >
@@ -60,18 +61,75 @@ const CreateForm: FC<CreateFormProps> = (props) => {
           rules={[
             {
               required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.ruleName"
-                  defaultMessage="Rule name is required"
-                />
-              ),
+              message: '请输入商品名称',
             },
           ]}
           width="md"
           name="name"
+          label="商品名称"
+          placeholder="请输入商品名称"
         />
-        <ProFormTextArea width="md" name="desc" />
+        <ProFormSelect
+          rules={[
+            {
+              required: true,
+              message: '请选择商品分类',
+            },
+          ]}
+          width="md"
+          name="category"
+          label="商品分类"
+          placeholder="请选择商品分类"
+          options={[
+            { label: '服装', value: '服装' },
+            { label: '配饰', value: '配饰' },
+            { label: '美妆', value: '美妆' },
+            { label: '家居', value: '家居' },
+            { label: '数码', value: '数码' },
+            { label: '食品', value: '食品' },
+            { label: '运动', value: '运动' },
+            { label: '图书', value: '图书' },
+          ]}
+        />
+        <ProFormDigit
+          rules={[
+            {
+              required: true,
+              message: '请输入商品价格',
+            },
+          ]}
+          width="md"
+          name="price"
+          label="售价"
+          placeholder="请输入商品售价"
+          min={0}
+          fieldProps={{ precision: 2 }}
+        />
+        <ProFormDigit
+          rules={[
+            {
+              required: true,
+              message: '请输入库存数量',
+            },
+          ]}
+          width="md"
+          name="stock"
+          label="库存"
+          placeholder="请输入库存数量"
+          min={0}
+        />
+        <ProFormTextArea
+          width="md"
+          name="description"
+          label="商品描述"
+          placeholder="请输入商品描述"
+        />
+        <ProFormSwitch
+          name="status"
+          label="上架状态"
+          checkedChildren="上架"
+          unCheckedChildren="下架"
+        />
       </ModalForm>
     </>
   );
